@@ -1,0 +1,4 @@
+.cyberia-creds
+__pycache__/
+*.py[cod]
+

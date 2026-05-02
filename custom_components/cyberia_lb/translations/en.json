@@ -1,0 +1,43 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Cyberia Lebanon",
+        "description": "Sign in with your Cyberia Account Management Center username and password.",
+        "data": {
+          "username": "Username",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate Cyberia",
+        "description": "Enter the password for {username}.",
+        "data": {
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Username or password was rejected by Cyberia.",
+      "cannot_connect": "Cannot reach Cyberia servers",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "This Cyberia account is already configured",
+      "reauth_successful": "Re-authentication successful"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "account_count": { "name": "Account count" },
+      "data_used": { "name": "Data used" },
+      "data_total": { "name": "Data total" },
+      "data_remaining": { "name": "Data remaining" },
+      "plan": { "name": "Plan" },
+      "balance": { "name": "Balance" },
+      "status": { "name": "Status" },
+      "validity": { "name": "Plan validity" },
+      "days_until_expiry": { "name": "Days until expiry" }
+    }
+  }
+}
