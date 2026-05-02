@@ -2,7 +2,7 @@
 
 Custom Home Assistant integration for monitoring a Cyberia Lebanon account through the Account Management Center at `myaccount.cyberia.net.lb`.
 
-This integration is modeled after `alfa-lb`: it creates sensors for subscription/account status, plan, expiry, and traffic usage. Cyberia's portal is an ASP.NET/SharePoint site, so the integration signs in by posting the login form with its hidden fields and then parses the authenticated account pages.
+This integration creates sensors for subscription/account status, plan, expiry, and traffic usage. Cyberia's portal is an ASP.NET/SharePoint site, so the integration signs in by posting the login form with its hidden fields and then parses the authenticated account pages.
 
 ## Current status
 
@@ -16,4 +16,8 @@ Copy `custom_components/cyberia_lb` into your Home Assistant `custom_components`
 
 ## Credentials
 
-Use the Cyberia Account Management Center username and password, not the old subscription username unless that is also your portal login.
+Use the Cyberia Account Management Center username and password.
+
+## Disclaimer
+
+Unofficial. Not affiliated with Cyberia. Use at your own risk; credentials are stored by Home Assistant in its config entry store.
