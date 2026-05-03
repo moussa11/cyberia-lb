@@ -1,0 +1,43 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "سايبيريا لبنان",
+        "description": "سجّل الدخول باستخدام اسم المستخدم وكلمة المرور الخاصة بمركز إدارة حساب سايبيريا.",
+        "data": {
+          "username": "اسم المستخدم",
+          "password": "كلمة المرور"
+        }
+      },
+      "reauth_confirm": {
+        "title": "إعادة مصادقة سايبيريا",
+        "description": "أدخل كلمة المرور لـ {username}.",
+        "data": {
+          "password": "كلمة المرور"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "رفضت سايبيريا اسم المستخدم أو كلمة المرور.",
+      "cannot_connect": "تعذر الاتصال بخوادم سايبيريا",
+      "unknown": "خطأ غير متوقع"
+    },
+    "abort": {
+      "already_configured": "حساب سايبيريا هذا مضاف مسبقاً",
+      "reauth_successful": "تمت إعادة المصادقة بنجاح"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "account": { "name": "الحساب" },
+      "data_used": { "name": "البيانات المستخدمة" },
+      "data_total": { "name": "إجمالي البيانات" },
+      "data_remaining": { "name": "البيانات الإضافية المتبقية" },
+      "plan": { "name": "الباقة" },
+      "balance": { "name": "الرصيد" },
+      "validity": { "name": "صلاحية الباقة" },
+      "days_until_expiry": { "name": "الأيام حتى انتهاء الصلاحية" }
+    }
+  }
+}
+
