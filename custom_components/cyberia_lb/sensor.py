@@ -136,7 +136,7 @@ class CyberiaSensor(CoordinatorEntity[CyberiaCoordinator], SensorEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
             manufacturer=MANUFACTURER,
-            name=entry.title,
+            name=f"Cyberia {(coordinator.data or {}).get('account_name') or entry.title.removeprefix('Cyberia ')}",
             model=(coordinator.data or {}).get("plan_name"),
             configuration_url=BASE_CONFIGURATION_URL,
         )

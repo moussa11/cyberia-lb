@@ -32,6 +32,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     coordinator = CyberiaCoordinator(hass, entry, client)
     await coordinator.async_config_entry_first_refresh()
 
+    account_name = (coordinator.data or {}).get("account_name")
+    if account_name and entry.title != f"Cyberia {account_name}":
+        hass.config_entries.async_update_entry(entry, title=f"Cyberia {account_name}")
+
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
@@ -42,4 +46,3 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
     return unload_ok
-

@@ -49,8 +49,9 @@ class CyberiaConfigFlow(ConfigFlow, domain=DOMAIN):
                 unique = data.get("username") or username
                 await self.async_set_unique_id(unique)
                 self._abort_if_unique_id_configured()
+                title = data.get("account_name") or unique
                 return self.async_create_entry(
-                    title=f"Cyberia {unique}",
+                    title=f"Cyberia {title}",
                     data={CONF_USERNAME: username, CONF_PASSWORD: password},
                 )
 
@@ -93,4 +94,3 @@ class CyberiaConfigFlow(ConfigFlow, domain=DOMAIN):
             errors=errors,
             description_placeholders={"username": username},
         )
-

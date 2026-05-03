@@ -1,4 +1,5 @@
 .cyberia-creds
 .DS_Store
+.venv-test/
 __pycache__/
 *.py[cod]

@@ -265,9 +265,11 @@ def _parse_account_data(html: str, account_list_html: str | None = None) -> dict
     validity_date = _parse_date(validity_raw)
 
     accounts = _summarize_tables(_extract_tables(account_list_html)) if account_list_html else []
+    account_name = accounts[0].get("account_name") if accounts else None
     details = _details_from_candidates(candidates)
     return {
         "account_count": len(accounts) or None,
+        "account_name": account_name,
         "accounts": accounts,
         "details": details,
         "plan_name": _find_value(candidates, "type", "plan", "service", "package"),
@@ -341,6 +343,7 @@ class CyberiaClient:
         self._username = username.strip()
         self._password = password
         self._logged_in = False
+        self._auth_cookie: str | None = None
 
     @property
     def username(self) -> str:
@@ -350,7 +353,7 @@ class CyberiaClient:
         try:
             async with self._session.get(
                 url,
-                headers={k: v for k, v in HEADERS.items() if k != "Content-Type"},
+                headers=self._headers(include_content_type=False),
                 timeout=aiohttp.ClientTimeout(total=30),
             ) as resp:
                 text = await resp.text()
@@ -365,6 +368,7 @@ class CyberiaClient:
             raise CyberiaApiError(f"Timeout fetching {url}") from err
 
     async def _login(self) -> None:
+        self._auth_cookie = None
         login_html = await self._get(LOGIN_URL)
         parser = _AspNetFormParser()
         parser.feed(login_html)
@@ -382,27 +386,50 @@ class CyberiaClient:
             async with self._session.post(
                 post_url,
                 data=fields,
-                headers=HEADERS,
+                headers=self._headers(),
                 timeout=aiohttp.ClientTimeout(total=30),
-                allow_redirects=True,
+                allow_redirects=False,
             ) as resp:
                 text = await resp.text()
                 if resp.status >= 500:
                     raise CyberiaApiError(f"HTTP {resp.status} from Cyberia")
                 if resp.status >= 400:
                     raise CyberiaApiError(f"HTTP {resp.status}: {text[:200]}")
+                if "FedAuth" in resp.cookies:
+                    self._auth_cookie = resp.cookies["FedAuth"].value
+                    self._clear_session_cookie()
         except aiohttp.ClientError as err:
             raise CyberiaApiError(str(err)) from err
         except asyncio.TimeoutError as err:
             raise CyberiaApiError("Timeout signing in to Cyberia") from err
 
-        lowered = _page_text(text).lower()
-        if "your account is not registered yet" in lowered:
-            raise CyberiaAuthError("Account is not registered in Cyberia AMC")
-        if USERNAME_FIELD in text or PASSWORD_FIELD in text:
-            raise CyberiaAuthError("Cyberia login was not accepted")
+        if not self._auth_cookie:
+            lowered = _page_text(text).lower()
+            if "your account is not registered yet" in lowered:
+                raise CyberiaAuthError("Account is not registered in Cyberia AMC")
+            if USERNAME_FIELD in text or PASSWORD_FIELD in text:
+                raise CyberiaAuthError("Cyberia login was not accepted")
+            raise CyberiaAuthError("Cyberia did not return an authentication cookie")
 
         self._logged_in = True
+
+    def _clear_session_cookie(self) -> None:
+        """Avoid aiohttp sending a quoted FedAuth cookie to SharePoint."""
+        cookie_jar = getattr(self._session, "cookie_jar", None)
+        if cookie_jar is None:
+            return
+        clear_domain = getattr(cookie_jar, "clear_domain", None)
+        if clear_domain is not None:
+            clear_domain("myaccount.cyberia.net.lb")
+
+    def _headers(self, *, include_content_type: bool = True) -> dict[str, str]:
+        headers = dict(HEADERS)
+        if not include_content_type:
+            headers.pop("Content-Type", None)
+        if self._auth_cookie:
+            # SharePoint's FedAuth value breaks when aiohttp quotes cookies.
+            headers["Cookie"] = f"FedAuth={self._auth_cookie}"
+        return headers
 
     async def _authed_get(self, url: str) -> str:
         if not self._logged_in:
@@ -426,7 +453,7 @@ class CyberiaClient:
             async with self._session.post(
                 url,
                 data=fields,
-                headers={**HEADERS, "Referer": url},
+                headers={**self._headers(), "Referer": url},
                 timeout=aiohttp.ClientTimeout(total=30),
                 allow_redirects=True,
             ) as resp:
@@ -444,10 +471,12 @@ class CyberiaClient:
     async def async_validate(self) -> dict[str, Any]:
         """Verify credentials."""
         await self._login()
-        page = await self._authed_get(PROFILE_URL)
-        if USERNAME_FIELD in page or PASSWORD_FIELD in page:
+        accounts_html = await self._authed_get(MY_ACCOUNTS_URL)
+        if USERNAME_FIELD in accounts_html or PASSWORD_FIELD in accounts_html:
             raise CyberiaAuthError("Cyberia login was not accepted")
-        return {"username": self._username}
+        accounts = _summarize_tables(_extract_tables(accounts_html))
+        account_name = accounts[0].get("account_name") if accounts else None
+        return {"username": self._username, "account_name": account_name}
 
     async def async_get_account_data(self) -> dict[str, Any]:
         """Fetch and normalize Cyberia account data."""
