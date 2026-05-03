@@ -31,11 +31,13 @@ class CyberiaSensorEntityDescription(SensorEntityDescription):
 SENSORS: tuple[CyberiaSensorEntityDescription, ...] = (
     CyberiaSensorEntityDescription(
         key="account_count",
-        translation_key="account_count",
-        icon="mdi:account-multiple",
-        state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda d: d.get("account_count"),
-        attrs_fn=lambda d: {"accounts": d.get("accounts") or []},
+        translation_key="account",
+        icon="mdi:account",
+        value_fn=lambda d: d.get("account_username"),
+        attrs_fn=lambda d: {
+            "account_name": d.get("account_name"),
+            "accounts": d.get("accounts") or [],
+        },
     ),
     CyberiaSensorEntityDescription(
         key="data_used",
@@ -65,7 +67,7 @@ SENSORS: tuple[CyberiaSensorEntityDescription, ...] = (
         native_unit_of_measurement=UnitOfInformation.MEGABYTES,
         suggested_unit_of_measurement=UnitOfInformation.GIGABYTES,
         state_class=SensorStateClass.MEASUREMENT,
-        value_fn=lambda d: d.get("data_remaining_mb"),
+        value_fn=lambda d: d.get("data_remaining_extra_mb"),
     ),
     CyberiaSensorEntityDescription(
         key="plan",
@@ -82,12 +84,6 @@ SENSORS: tuple[CyberiaSensorEntityDescription, ...] = (
         translation_key="balance",
         icon="mdi:cash",
         value_fn=lambda d: d.get("balance_raw"),
-    ),
-    CyberiaSensorEntityDescription(
-        key="status",
-        translation_key="status",
-        icon="mdi:list-status",
-        value_fn=lambda d: d.get("status"),
     ),
     CyberiaSensorEntityDescription(
         key="validity",

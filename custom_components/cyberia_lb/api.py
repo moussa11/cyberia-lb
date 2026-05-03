@@ -265,18 +265,21 @@ def _parse_account_data(html: str, account_list_html: str | None = None) -> dict
     validity_date = _parse_date(validity_raw)
 
     accounts = _summarize_tables(_extract_tables(account_list_html)) if account_list_html else []
-    account_name = accounts[0].get("account_name") if accounts else None
+    account = accounts[0] if accounts else {}
+    account_name = account.get("account_name")
+    account_username = account.get("username")
     details = _details_from_candidates(candidates)
     return {
         "account_count": len(accounts) or None,
         "account_name": account_name,
+        "account_username": account_username,
         "accounts": accounts,
         "details": details,
         "plan_name": _find_value(candidates, "type", "plan", "service", "package"),
-        "status": _find_value(candidates, "status", "state"),
         "data_used_mb": used_mb,
         "data_total_mb": total_mb,
         "data_remaining_mb": remaining_mb,
+        "data_remaining_extra_mb": remaining_mb,
         "balance_raw": _find_value(candidates, "balance"),
         "validity": (
             datetime.combine(validity_date, datetime.min.time()).astimezone()

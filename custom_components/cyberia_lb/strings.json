@@ -29,13 +29,12 @@
   },
   "entity": {
     "sensor": {
-      "account_count": { "name": "Account count" },
+      "account": { "name": "Account" },
       "data_used": { "name": "Data used" },
       "data_total": { "name": "Data total" },
-      "data_remaining": { "name": "Data remaining" },
+      "data_remaining": { "name": "Remaining extra data" },
       "plan": { "name": "Plan" },
       "balance": { "name": "Balance" },
-      "status": { "name": "Status" },
       "validity": { "name": "Plan validity" },
       "days_until_expiry": { "name": "Days until expiry" }
     }
