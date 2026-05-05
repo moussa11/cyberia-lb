@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from html import unescape
 from html.parser import HTMLParser
+from http.cookies import CookieError, SimpleCookie
 from typing import Any
 from urllib.parse import urljoin
 
@@ -234,6 +235,20 @@ def _find_manage_target(html: str) -> str | None:
     return match.group(1) if match else None
 
 
+def _response_cookie_value(resp: aiohttp.ClientResponse, name: str) -> str | None:
+    if name in resp.cookies:
+        return resp.cookies[name].value
+    for header in resp.headers.getall("Set-Cookie", []):
+        cookie = SimpleCookie()
+        try:
+            cookie.load(header)
+        except CookieError:
+            continue
+        if name in cookie:
+            return cookie[name].value
+    return None
+
+
 def _parse_account_data(html: str, account_list_html: str | None = None) -> dict[str, Any]:
     text = _page_text(html)
     tables = _extract_tables(html)
@@ -398,8 +413,8 @@ class CyberiaClient:
                     raise CyberiaApiError(f"HTTP {resp.status} from Cyberia")
                 if resp.status >= 400:
                     raise CyberiaApiError(f"HTTP {resp.status}: {text[:200]}")
-                if "FedAuth" in resp.cookies:
-                    self._auth_cookie = resp.cookies["FedAuth"].value
+                if auth_cookie := _response_cookie_value(resp, "FedAuth"):
+                    self._auth_cookie = auth_cookie
                     self._clear_session_cookie()
         except aiohttp.ClientError as err:
             raise CyberiaApiError(str(err)) from err

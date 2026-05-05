@@ -15,6 +15,13 @@
         "data": {
           "password": "Password"
         }
+      },
+      "reconfigure": {
+        "title": "Reconfigure Cyberia",
+        "description": "Update the Cyberia Account Management Center password for {username}.",
+        "data": {
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -24,6 +31,7 @@
     },
     "abort": {
       "already_configured": "This Cyberia account is already configured",
+      "reconfigure_successful": "Reconfiguration successful",
       "reauth_successful": "Re-authentication successful"
     }
   },

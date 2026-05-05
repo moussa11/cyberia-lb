@@ -11,7 +11,14 @@
       },
       "reauth_confirm": {
         "title": "إعادة مصادقة سايبيريا",
-        "description": "أدخل كلمة المرور لـ {username}.",
+        "description": "أدخل كلمة المرور لحساب {username}.",
+        "data": {
+          "password": "كلمة المرور"
+        }
+      },
+      "reconfigure": {
+        "title": "إعادة ضبط سايبيريا",
+        "description": "حدّث كلمة مرور مركز إدارة حساب سايبيريا لحساب {username}.",
         "data": {
           "password": "كلمة المرور"
         }
@@ -24,6 +31,7 @@
     },
     "abort": {
       "already_configured": "حساب سايبيريا هذا مضاف مسبقاً",
+      "reconfigure_successful": "تمت إعادة الضبط بنجاح",
       "reauth_successful": "تمت إعادة المصادقة بنجاح"
     }
   },
@@ -40,4 +48,3 @@
     }
   }
 }
-
