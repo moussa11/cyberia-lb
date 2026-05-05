@@ -1,4 +1,5 @@
 .cyberia-creds
+AGENTS.md
 .DS_Store
 .venv-test/
 __pycache__/
